@@ -21,7 +21,7 @@ public class CustomerRepository extends BaseRepository<Customer, Long> {
 	public List<CustomerRentalHistoryFilmCopy> getRentalHistories(long customerId, boolean returned) {
 		EntityManager em = entityManagerThreadLocal.get();
 		String s = returned ? "Customer.getRentalHistories_Returned" : "Customer.getRentalHistories_NotReturned";
-		Query q = em.createNamedQuery(s);
+		Query q = em.createNamedQuery(s).setHint("org.hibernate.cacheable", true);
 		q.setParameter("_id", customerId);
 		return q.getResultList();
 	}
@@ -53,7 +53,8 @@ public class CustomerRepository extends BaseRepository<Customer, Long> {
 
 	public Customer findByUsername(String username) {
 		EntityManager em = entityManagerThreadLocal.get();
-		TypedQuery<Customer> tq = em.createNamedQuery("Customer.findByUsername", Customer.class);
+		TypedQuery<Customer> tq = em.createNamedQuery("Customer.findByUsername", Customer.class)
+				.setHint("org.hibernate.cacheable", true);
 		tq.setParameter("_username", username);
 		return tq.getSingleResult();
 	}

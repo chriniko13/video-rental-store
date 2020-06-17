@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -43,6 +45,8 @@ import java.util.Set;
 				@UniqueConstraint(name = "copy_reference_unique", columnNames = { "reference" })
 		}
 )
+
+@Cache(region = "filmCopyCache", usage = CacheConcurrencyStrategy.READ_WRITE)
 public class FilmCopy implements Record<Long> {
 
 	@Id
@@ -69,6 +73,15 @@ public class FilmCopy implements Record<Long> {
 	private Instant createdAt;
 
 	private Instant updatedAt;
+	@Version
+	private int version;
+
+	public static FilmCopy create(String reference, FilmCopyStatus status) {
+		FilmCopy fc = new FilmCopy();
+		fc.setReference(reference);
+		fc.setStatus(status);
+		return fc;
+	}
 
 	@PrePersist
 	protected void onCreate() {
@@ -80,19 +93,8 @@ public class FilmCopy implements Record<Long> {
 		updatedAt = Instant.now(ClockProvider.getClock());
 	}
 
-	@Version
-	private int version;
-
-	public static FilmCopy create(String reference, FilmCopyStatus status) {
-		FilmCopy fc = new FilmCopy();
-		fc.setReference(reference);
-		fc.setStatus(status);
-		return fc;
-	}
-
 	@Override public Long extractId() {
 		return id;
 	}
-
 
 }

@@ -42,9 +42,17 @@
             <property name="hibernate.format_sql" value="false"/>
             <property name="hibernate.enable_lazy_load_no_trans" value="false"/>
             <property name="hibernate.connection.provider_disables_autocommit" value="true"/>
-
             <!--<property name="hibernate.connection.isolation" value="2"/>--> <!-- read committed -->
             <property name="hibernate.connection.isolation" value="4"/> <!-- repeatable read-->
+
+
+            <!-- second level cache configuration -->
+            <property name="hibernate.cache.use_second_level_cache" value="true"/>
+            <property name="hibernate.cache.region.factory_class"
+                      value="org.hibernate.cache.jcache.internal.JCacheRegionFactory"/>
+            <property name="hibernate.javax.cache.provider" value="org.ehcache.jsr107.EhcacheCachingProvider"/>
+            <property name="hibernate.cache.use_query_cache" value="true"/>
+            <property name="hibernate.javax.cache.uri" value="classpath://META-INF/ehcache.xml"/>
 
         </properties>
 

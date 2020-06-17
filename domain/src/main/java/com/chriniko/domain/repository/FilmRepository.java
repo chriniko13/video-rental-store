@@ -40,7 +40,7 @@ public class FilmRepository extends BaseRepository<Film, Long> {
 	public Film findByName(String name) {
 		EntityManager em = entityManagerThreadLocal.get();
 
-		TypedQuery<Film> q = em.createNamedQuery("Film.findByName", Film.class);
+		TypedQuery<Film> q = em.createNamedQuery("Film.findByName", Film.class).setHint("org.hibernate.cacheable", true);
 		q.setParameter("_name", name);
 		try {
 			return q.getSingleResult();

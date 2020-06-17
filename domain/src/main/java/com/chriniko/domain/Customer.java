@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -68,6 +70,9 @@ import java.util.Set;
 		name = "Customer.findByUsername",
 		query = "select c from Customer c where c.username = :_username"
 )
+
+@Cache(region = "customerCache", usage = CacheConcurrencyStrategy.READ_WRITE)
+
 public class Customer implements Record<Long> {
 
 	@Id

@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
@@ -31,6 +33,8 @@ import java.time.Instant;
 
 @Entity
 @Table(name = "customers_rental_history_films")
+
+@Cache(region = "customerRentalHistoryCache", usage = CacheConcurrencyStrategy.READ_WRITE)
 public class CustomerRentalHistoryFilmCopy implements Record<CustomerRentalHistoryFilmCopyId> {
 
 	@EmbeddedId

@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -47,6 +49,7 @@ import java.util.Set;
 
 @NamedQuery(name = "Film.findByName", query = "select f from Film f where f.name = :_name")
 
+@Cache(region = "filmCache", usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Film implements Record<Long> {
 
 	@Id
