@@ -1,0 +1,9 @@
+{
+  "serviceOperationResult": "FIND_FILM_COPY_BY_ID_EXECUTED",
+  "result": {
+    "view-type": "FilmCopyViewDto",
+    "id": 1,
+    "reference": "2_1",
+    "status": "EXCELLENT"
+  }
+}

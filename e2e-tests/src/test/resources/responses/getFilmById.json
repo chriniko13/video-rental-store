@@ -1,0 +1,9 @@
+{
+  "serviceOperationResult": "FIND_FILM_BY_ID_EXECUTED",
+  "result": {
+    "view-type": "film-view",
+    "id": 1,
+    "name": "12 angry men",
+    "type": "OLD"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "serviceOperationResult": "FILM_COPY_RENT_EXECUTED",
+  "result": {
+    "view-type": "composite-entity-id-view",
+    "id": "{\"customerId\":4,\"filmCopyId\":8}"
+  }
+}

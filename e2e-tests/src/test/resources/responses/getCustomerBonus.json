@@ -1,0 +1,69 @@
+{
+  "serviceOperationResult": "GET_CUSTOMER_BONUS_EXECUTED",
+  "result": {
+    "view-type": "customer-bonus-view",
+    "totalBonuses": 6,
+    "history": [
+      {
+        "filmId": 3,
+        "filmName": "Dirty Harry",
+        "filmType": "OLD",
+        "filmCopyId": 2,
+        "filmCopyReference": "3_1",
+        "filmCopyStatus": "EXCELLENT",
+        "rented": "2020-06-01T22:51:56.163Z",
+        "returned": "2020-06-11T22:51:56.281Z",
+        "cost": 180.00,
+        "bonus": 1
+      },
+      {
+        "filmId": 6,
+        "filmName": "The Bourne Identity",
+        "filmType": "OLD",
+        "filmCopyId": 5,
+        "filmCopyReference": "6_1",
+        "filmCopyStatus": "EXCELLENT",
+        "rented": "2020-06-08T22:51:56.229Z",
+        "returned": "2020-06-11T22:51:56.333Z",
+        "cost": 30.00,
+        "bonus": 1
+      },
+      {
+        "filmId": 7,
+        "filmName": "The Dark Knight",
+        "filmType": "REGULAR",
+        "filmCopyId": 6,
+        "filmCopyReference": "7_1",
+        "filmCopyStatus": "EXCELLENT",
+        "rented": "2020-06-09T22:51:56.248Z",
+        "returned": "2020-06-11T22:51:56.349Z",
+        "cost": 30.00,
+        "bonus": 1
+      },
+      {
+        "filmId": 4,
+        "filmName": "Mad Max: Fury Road",
+        "filmType": "NEW_RELEASE",
+        "filmCopyId": 3,
+        "filmCopyReference": "4_1",
+        "filmCopyStatus": "EXCELLENT",
+        "rented": "2020-06-04T22:51:56.193Z",
+        "returned": "2020-06-11T22:51:56.303Z",
+        "cost": 280.00,
+        "bonus": 2
+      },
+      {
+        "filmId": 5,
+        "filmName": "Die Hard",
+        "filmType": "OLD",
+        "filmCopyId": 4,
+        "filmCopyReference": "5_1",
+        "filmCopyStatus": "EXCELLENT",
+        "rented": "2020-06-06T22:51:56.211Z",
+        "returned": "2020-06-11T22:51:56.318Z",
+        "cost": 30.00,
+        "bonus": 1
+      }
+    ]
+  }
+}

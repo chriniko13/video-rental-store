@@ -1,0 +1,11 @@
+{
+  "serviceOperationResult": "FIND_CUSTOMER_BY_ID_EXECUTED",
+  "result": {
+    "view-type": "customer-view",
+    "id": 1,
+    "username": "user_sample",
+    "firstname": "firstname sample",
+    "initials": "initials sample",
+    "surname": "surname sample"
+  }
+}

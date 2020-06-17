@@ -1,0 +1,21 @@
+{
+  "serviceOperationResult": "FIND_CUSTOMER_RENTED_FILM_COPIES_EXECUTED",
+  "result": {
+    "view-type": "customer-rented-film-copies-view",
+    "rentedResults": [
+      {
+        "view-type": "customer-rented-film-copy-view",
+        "rented": "2020-06-11T14:58:22.643Z",
+        "returned": null,
+        "cost": null,
+        "bonus": null,
+        "filmCopyId": 7,
+        "filmCopyReference": "8_1",
+        "filmCopyStatus": "EXCELLENT",
+        "filmId": 8,
+        "filmName": "Ocean Eleven",
+        "filmType": "OLD"
+      }
+    ]
+  }
+}

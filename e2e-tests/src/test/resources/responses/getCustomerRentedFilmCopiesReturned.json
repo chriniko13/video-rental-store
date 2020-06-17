@@ -1,0 +1,21 @@
+{
+  "serviceOperationResult": "FIND_CUSTOMER_RENTED_FILM_COPIES_EXECUTED",
+  "result": {
+    "view-type": "customer-rented-film-copies-view",
+    "rentedResults": [
+      {
+        "view-type": "customer-rented-film-copy-view",
+        "rented": "2020-06-06T16:34:23.969Z",
+        "returned": "2020-06-11T16:34:27.161Z",
+        "cost": 90.00,
+        "bonus": 1,
+        "filmCopyId": 8,
+        "filmCopyReference": "9_1",
+        "filmCopyStatus": "EXCELLENT",
+        "filmId": 9,
+        "filmName": "The Big Short",
+        "filmType": "REGULAR"
+      }
+    ]
+  }
+}

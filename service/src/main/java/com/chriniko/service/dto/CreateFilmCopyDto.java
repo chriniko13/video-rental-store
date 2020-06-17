@@ -1,0 +1,14 @@
+package com.chriniko.service.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class CreateFilmCopyDto {
+
+	private String status;
+
+}
