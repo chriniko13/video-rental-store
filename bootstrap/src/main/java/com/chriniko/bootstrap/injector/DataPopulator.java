@@ -13,9 +13,9 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.apache.log4j.Logger;
 
 import javax.annotation.Nullable;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.security.SecureRandom;
 import java.time.Clock;
 import java.time.Instant;
@@ -35,86 +35,20 @@ import java.util.stream.Stream;
 
 /*
 	Important Note: No clean code / it is written in fast way, just to populate the database with some records.
+
+	Due to bad csv file (contains duplicates) we swallow any ConstraintViolationException we receive from DB communication.
  */
 public class DataPopulator {
 
 	private static final Logger logger = Logger.getLogger(DataPopulator.class);
 
-	private DataPopulator() {
-	}
-
 	// Note: quick test.
 	public static void main(String[] args) {
-		//inject(10_000);
-		//inject(1_000);
-		inject(null);
-	}
+		DataPopulator dataPopulator = new DataPopulator();
 
-	public static void inject(@Nullable Integer readLimit) {
-
-		// prepare environment for execution...
-		PersistenceProvider.clearAllTables();
-
-		String resource = "/movies.csv";
-
-		int totalLines = (int) countLines(resource) - 1 /*for header*/;
-		logger.info("file total lines: " + totalLines);
-
-		int noOfWorkers = 80;
-		int batchSize = 100;
-
-		if (readLimit == null) {
-			readLimit = totalLines;
-		}
-
-		ExecutorService executorService = Executors.newFixedThreadPool(noOfWorkers, new ThreadFactoryBuilder().setNameFormat("film-injector-worker-%d").build());
-
-		LongAccumulator totalRecordsPersisted = new LongAccumulator(Long::sum, 0);
-
-		FilmRepository filmRepository = new FilmRepository();
-		FilmCopyRepository filmCopyRepository = new FilmCopyRepository();
-		CustomerRepository customerRepository = new CustomerRepository();
-
-		final ArrayBlockingQueue<CreateFilmTask> filmsQueue = new ArrayBlockingQueue<>(3500, true);
-
-		Pattern yearExtractor = Pattern.compile("\\([0-9]{4}\\)");
-		Pattern titleExtractor = Pattern.compile("\".*\"");
-
-		// start reader...
-		long startTime = System.currentTimeMillis();
-
-		FilmsCsvReader filmsCsvReader = new FilmsCsvReader(resource, filmsQueue, batchSize, readLimit);
-		filmsCsvReader.setName("films-csv-reader");
-		filmsCsvReader.start();
-
-		// start injectors...
-		List<FilmsInjectorWorker> injectors = IntStream.rangeClosed(1, noOfWorkers).boxed()
-				.map(idx -> new FilmsInjectorWorker(filmsQueue, yearExtractor, titleExtractor, filmRepository, totalRecordsPersisted))
-				.collect(Collectors.toList());
-
-		injectors.forEach(executorService::submit);
-
-		// wait for finish...
-		while (totalRecordsPersisted.get() < readLimit) {
-			logger.info("current injection progress: " + totalRecordsPersisted.get() + " < " + readLimit);
-			try {
-				Thread.sleep(1000); // Note: pacing.
-			} catch (InterruptedException e) {
-				// this should not happen, but for just in case.
-				Thread.currentThread().interrupt();
-			}
-		}
-		logger.info("finished injection.... totalRecordsPersisted: " + totalRecordsPersisted.get() + " --- readLimit: " + readLimit + " --- actualPersistedRecords: " + filmRepository.count());
-		injectors.forEach(Thread::interrupt);
-
-		List<Customer> customers = createCustomers(customerRepository);
-		createCustomersInteractionWithFilmCopies(filmCopyRepository, customerRepository, customers);
-
-		long totalTime = System.currentTimeMillis() - startTime;
-		logger.info("total time to execute injection in seconds: " + TimeUnit.SECONDS.convert(totalTime, TimeUnit.MILLISECONDS));
-
-		// cleanup...
-		executorService.shutdownNow();
+		//dataPopulator.inject(10_000);
+		//dataPopulator.inject(1_000);
+		dataPopulator.inject(null);
 	}
 
 	private static List<Customer> createCustomers(CustomerRepository customerRepository) {
@@ -183,14 +117,83 @@ public class DataPopulator {
 	}
 
 	private static long countLines(String resourceName) {
-		try {
-			Path path = Paths.get(DataPopulator.class.getResource(resourceName).toURI());
-			try (Stream<String> lines = Files.lines(path)) {
-				return lines.count();
-			}
+		try (
+				InputStream is = DataPopulator.class.getResourceAsStream(resourceName);
+				Stream<String> lines = new BufferedReader(new InputStreamReader(is)).lines()
+		) {
+
+			return lines.count();
+
 		} catch (Exception e) {
 			throw new InfrastructureException(e);
 		}
+	}
+
+	public void inject(@Nullable Integer readLimit) {
+
+		// prepare environment for execution...
+		PersistenceProvider.clearAllTables();
+
+		String resource = "/movies.csv";
+
+		int totalLines = (int) countLines(resource) - 1 /*for header*/;
+		logger.info("file total lines: " + totalLines);
+
+		int noOfWorkers = 80;
+		int batchSize = 100;
+
+		if (readLimit == null) {
+			readLimit = totalLines;
+		}
+
+		ExecutorService executorService = Executors.newFixedThreadPool(noOfWorkers, new ThreadFactoryBuilder().setNameFormat("film-injector-worker-%d").build());
+
+		LongAccumulator totalRecordsPersisted = new LongAccumulator(Long::sum, 0);
+
+		FilmRepository filmRepository = new FilmRepository();
+		FilmCopyRepository filmCopyRepository = new FilmCopyRepository();
+		CustomerRepository customerRepository = new CustomerRepository();
+
+		final ArrayBlockingQueue<CreateFilmTask> filmsQueue = new ArrayBlockingQueue<>(3500, true);
+
+		Pattern yearExtractor = Pattern.compile("\\([0-9]{4}\\)");
+		Pattern titleExtractor = Pattern.compile("\".*\"");
+
+		// start reader...
+		long startTime = System.currentTimeMillis();
+
+		FilmsCsvReader filmsCsvReader = new FilmsCsvReader(resource, filmsQueue, batchSize, readLimit);
+		filmsCsvReader.setName("films-csv-reader");
+		filmsCsvReader.start();
+
+		// start injectors...
+		List<FilmsInjectorWorker> injectors = IntStream.rangeClosed(1, noOfWorkers).boxed()
+				.map(idx -> new FilmsInjectorWorker(filmsQueue, yearExtractor, titleExtractor, filmRepository, totalRecordsPersisted))
+				.collect(Collectors.toList());
+
+		injectors.forEach(executorService::submit);
+
+		// wait for finish...
+		while (totalRecordsPersisted.get() < readLimit) {
+			logger.info("current injection progress: " + totalRecordsPersisted.get() + " < " + readLimit);
+			try {
+				Thread.sleep(1000); // Note: pacing.
+			} catch (InterruptedException e) {
+				// this should not happen, but for just in case.
+				Thread.currentThread().interrupt();
+			}
+		}
+		logger.info("finished injection.... totalRecordsPersisted: " + totalRecordsPersisted.get() + " --- readLimit: " + readLimit + " --- actualPersistedRecords: " + filmRepository.count());
+		injectors.forEach(Thread::interrupt);
+
+		List<Customer> customers = createCustomers(customerRepository);
+		createCustomersInteractionWithFilmCopies(filmCopyRepository, customerRepository, customers);
+
+		long totalTime = System.currentTimeMillis() - startTime;
+		logger.info("total time to execute injection in seconds: " + TimeUnit.SECONDS.convert(totalTime, TimeUnit.MILLISECONDS));
+
+		// cleanup...
+		executorService.shutdownNow();
 	}
 
 }

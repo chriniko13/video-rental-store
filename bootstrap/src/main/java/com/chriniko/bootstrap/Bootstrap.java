@@ -55,7 +55,7 @@ public class Bootstrap {
 		});
 
 		if (injectData) {
-			DataPopulator.inject(1_000);
+			new DataPopulator().inject(1_000);
 		}
 
 		logger.info("platform is up and running....");

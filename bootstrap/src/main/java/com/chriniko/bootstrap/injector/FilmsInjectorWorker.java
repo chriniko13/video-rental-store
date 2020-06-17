@@ -9,8 +9,6 @@ import com.chriniko.domain.repository.FilmRepository;
 import org.apache.log4j.Logger;
 import org.hibernate.exception.ConstraintViolationException;
 
-import javax.persistence.PersistenceException;
-import javax.persistence.RollbackException;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -64,7 +62,6 @@ public class FilmsInjectorWorker extends Thread {
 		final List<String> lines = task.getLines();
 		final Set<Film> batch = getBatchOfFilms(lines);
 		saveFilmsBatch(batch);
-		createFilmCopies(batch);
 
 		// mark that finished work...
 		totalRecordsPersisted.accumulate(lines.size());
@@ -135,35 +132,39 @@ public class FilmsInjectorWorker extends Thread {
 				}
 
 				filmRepository.save(batch);
+
+				// now create some film copies
+				for (Film film : batch) {
+					String filmName = film.getName();
+					Film searchResult = filmRepository.findByName(filmName);
+					if (searchResult == null)
+						continue;
+
+					for (FilmCopyStatus value : FilmCopyStatus.values()) {
+						filmRepository.createCopy(searchResult, value);
+					}
+
+				}
+
 				return new TxResult<>(null);
 			});
 		} catch (TransactionRollbackException e) {
 
-			// Note: due to duplicate records in csv file, we swallow the error.
-			RollbackException rollbackException = (RollbackException) e.getCause();
-			PersistenceException persistenceException = (PersistenceException) rollbackException.getCause();
+			Throwable current = e.getCause();
+			boolean constraintProblem = false;
 
-			Throwable cause = persistenceException.getCause();
-			if (!(cause instanceof ConstraintViolationException)) {
+			while (current != null) {
+				if (current instanceof ConstraintViolationException) {
+					constraintProblem = true;
+					break;
+				}
+				current = current.getCause();
+			}
+
+			if (!constraintProblem) {
 				throw e;
 			}
 		}
-	}
-
-	private void createFilmCopies(Set<Film> batch) {
-		filmRepository.getTxBoundary().executeInTx(() -> {
-			for (Film film : batch) {
-				String filmName = film.getName();
-				Film searchResult = filmRepository.findByName(filmName);
-
-				for (FilmCopyStatus value : FilmCopyStatus.values()) {
-					filmRepository.createCopy(searchResult, value);
-				}
-
-			}
-
-			return new TxResult<>(null);
-		});
 	}
 
 }

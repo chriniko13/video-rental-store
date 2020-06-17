@@ -4,10 +4,9 @@ import com.chriniko.common.infra.InfrastructureException;
 import com.google.common.collect.Iterators;
 import org.apache.log4j.Logger;
 
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.stream.Stream;
 
@@ -28,16 +27,12 @@ public class FilmsCsvReader extends Thread {
 	}
 
 	@Override public void run() {
-		final Path path;
-		try {
-			path = Paths.get(DataPopulator.class.getResource(resourceName).toURI());
-		} catch (URISyntaxException e) {
-			throw new InfrastructureException(e);
-		}
-
 		final int[] acc = new int[] { 0 }; // Note: use heap in order to mutate inside closure.
 
-		try (Stream<String> lines = Files.lines(path).skip(1).limit(readLimit)) {
+		try (
+				InputStream is = DataPopulator.class.getResourceAsStream(resourceName);
+				Stream<String> lines = new BufferedReader(new InputStreamReader(is)).lines().skip(1).limit(readLimit)
+		) {
 			Iterators.partition(lines.iterator(), batchSize).forEachRemaining(batch -> {
 				CreateFilmTask task = new CreateFilmTask(batch);
 				try {
