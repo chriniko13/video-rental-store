@@ -19,7 +19,7 @@
     * Kryo
     * Guice
     * Postgresql driver
-    * Jpa, hibernate, hikaricp
+    * Jpa, hibernate, hikaricp, jcache, ehcache
     * Commons pool 2
     * Reflections
     * Log4j, jcabi-log
