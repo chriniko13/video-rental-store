@@ -7,7 +7,7 @@ import javax.persistence.Persistence;
 public class PersistenceProvider {
 
 	private static final String PERSISTENCE_UNIT_NAME = "persistence-domain";
-	private static EntityManagerFactory factory;
+	private static final EntityManagerFactory factory;
 
 	static {
 		factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);

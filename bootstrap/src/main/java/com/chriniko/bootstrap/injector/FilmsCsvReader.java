@@ -10,7 +10,7 @@ import java.io.InputStreamReader;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.stream.Stream;
 
-public class FilmsCsvReader extends Thread {
+public final class FilmsCsvReader extends Thread {
 
 	private static final Logger logger = Logger.getLogger(FilmsCsvReader.class);
 

@@ -1,6 +1,5 @@
 package com.chriniko.service;
 
-import com.chriniko.common.infra.GenericCodec;
 import com.chriniko.service.boundary.BootstrapServiceComponent;
 import com.chriniko.service.command.CreateFilmCommand;
 import com.chriniko.service.infra.BootstrapMockedDomainComponent;

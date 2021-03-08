@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.LongAccumulator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class FilmsInjectorWorker extends Thread {
+public final class FilmsInjectorWorker extends Thread {
 
 	private static final Logger logger = Logger.getLogger(FilmsInjectorWorker.class);
 

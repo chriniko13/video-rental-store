@@ -11,7 +11,9 @@ import java.util.List;
 
 public abstract class BaseRepository<E extends Record<I>, I> implements Repository<E, I> {
 
+	// Note: entity manager should be binded per thread - because is not thread safe.
 	protected final ThreadLocal<EntityManager> entityManagerThreadLocal;
+
 	private final Logger logger = Logger.getLogger(getEntityClass());
 
 	public BaseRepository() {

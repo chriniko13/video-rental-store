@@ -38,7 +38,7 @@ import java.util.stream.Stream;
 
 	Due to bad csv file (contains duplicates) we swallow any ConstraintViolationException we receive from DB communication.
  */
-public class DataPopulator {
+public final class DataPopulator {
 
 	private static final Logger logger = Logger.getLogger(DataPopulator.class);
 

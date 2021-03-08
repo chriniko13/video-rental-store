@@ -2,7 +2,7 @@ package com.chriniko.bootstrap.injector;
 
 import java.util.List;
 
-public class CreateFilmTask {
+public final class CreateFilmTask {
 
 	private final List<String> lines;
 

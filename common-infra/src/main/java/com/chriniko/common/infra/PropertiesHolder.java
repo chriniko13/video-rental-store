@@ -11,7 +11,7 @@ public class PropertiesHolder {
 
 	static {
 
-		String[] resources = { "domain.properties" };
+		final String[] resources = { "domain.properties" };
 		for (String resource : resources) {
 			try (InputStream inputStream = PropertiesHolder.class.getClassLoader().getResourceAsStream(resource)) {
 				PROPERTIES.load(inputStream);
